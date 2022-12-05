@@ -18,80 +18,86 @@ connection.connect((err) =>{
 
 //Create a table
 
-app.get('/invitees', (req, res) =>{
+const tables = [
+    `CREATE TABLE IF NOT EXISTS Invitee(
+        invitee_no TINYINT AUTO_INCREMENT, 
+        invitee_name VARCHAR(75), 
+        invited_by VARCHAR(75), 
+        PRIMARY KEY(invitee_no))`,
+    `CREATE TABLE IF NOT EXISTS Room(
+        room_no TINYINT, 
+        room_name VARCHAR(75), 
+        floor_number TINYINT, 
+        PRIMARY KEY(room_no))`,
+    `CREATE TABLE IF NOT EXISTS Meeting(
+        meeting_no TINYINT, 
+        meeting_title VARCHAR(255), 
+        starting_time TIMESTAMP, ending_time TIMESTAMP,room_no TINYINT)`
+];
 
-    let sql = "CREATE TABLE Invitees(invitee_no int AUTO_INCREMENT, invitee_name VARCHAR(75), invited_by VARCHAR(75), PRIMARY KEY(invitee_no))";
-    connection.query(sql, (err, result) =>{
+const insertValues = [
+    `INSERT INTO Invitee(invitee_name, invited_by) 
+        Values('Jack', 'Daniel'),
+        ('Wouter', 'Rob'), 
+        ('Sultan', 'Ali'), 
+        ('Eda', 'Mustafa'), 
+        ('Rob', 'Heba')`,
+    `INSERT INTO Room
+        Values(32, 'Ideation Zone', 3), 
+        (21, 'Creative Arena', 2), 
+        (22, 'Team Territory', 2), 
+        (11, 'SkyNet', 1), 
+        (15, 'Cranium Focus', 1)`,
+    `INSERT INTO Meeting 
+        Values(1, 'Intech International', '2023-01-11,10:00', '2023-01-11 12:00', 32), 
+        (2, 'Sales-Con','2023-01-12 10:00', '2023-01-12 12:00', 21), 
+        (3, 'CyberMeet','2023-01-11 09:00', '2023-01-11 11:00', 22), 
+        (4, 'Earth Space','2023-01-12 13:00', '2023-01-12 15:00', 11), 
+        (5, 'Goference' , '2023-01-12 09:00', '2023-01-12 11:00', 15)`
+]
 
-        if(err) throw err;
-        console.log(result);
-        res.send('Invitees table is created');
+const result = [
+    `SELECT * FROM Invitee`,
+    `SELECT * FROM Room`,
+    `SELECT * FROM Meeting`
+]
+
+const createTable = (table) =>{
+    connection.query(table, (err, result) => {
+        if (err) throw err;
+        console.log("table is added");
     });
-});
+};
 
-app.get('/invitees', (req, res) =>{
-
-    let sql = "CREATE TABLE Invitees(invitee_no int, invitee_name VARCHAR(75), invited_by VARCHAR(75), PRIMARY KEY(invitee_no))";
-    connection.query(sql, (err, result) =>{
-
-        if(err) throw err;
-        console.log(result);
-        res.send('Invitees table is created');
+const addValue = (value) =>{
+    connection.query(value, (err, result) => {
+        if (err) throw err;
+        console.log('values are added');
     });
-});
+};
 
-app.get('/rooms', (req, res) =>{
-
-    let sql = "CREATE TABLE Rooms(room_no INT, room_name VARCHAR(75), floor_number INT, PRIMARY KEY(room_no))";
-    connection.query(sql, (err, result) =>{
-
-        if(err) throw err;
-        console.log(result);
-        res.send('Rooms table is created');
+const showTable = (table) => {
+    connection.query(table, (err, result) => {
+        if (err) throw err;
+        console.table(result);
     });
-});
+}
 
-app.get('/meetings', (req, res) =>{
 
-    let sql = "CREATE TABLE Meetings(meeting_no INT, meeting_title VARCHAR(255), starting_time TIME, ending_time TIME,room_no INT)";
-    connection.query(sql, (err, result) =>{
-
-        if(err) throw err;
-        console.log(result);
-        res.send('Meetings table is created');
+const dropTables = () => {
+    const sql = `DROP TABLE Room , Meeting , Invitee`;
+    connection.query(sql, (err, result) => {
+      if (err) console.log(err);
+      console.log("Tables are dropped");
     });
-});
+  };
+dropTables();
 
 
-app.get('/inviteesList', (req,res) =>{
-    let sql = "INSERT INTO Invitees(invitee_name, invited_by) Values('Jack', 'Daniel'), ('Wouter', 'Rob'), ('Sultan', 'Ali'), ('Eda', 'Mustafa'), ('Rob', 'Heba')";
-    connection.query(sql, (err, result) =>{
+tables.forEach(table => createTable(table));
+insertValues.forEach(value => addValue(value));
+result.forEach(table => showTable(table));
 
-        if(err) throw err;
-        console.log(result);
-        res.send('InviteesList is created');
-    });
-});
-
-app.get('/roomsTable', (req,res) =>{
-    let sql = "INSERT INTO Rooms Values(32, 'Ideation Zone', 3), (21, 'Creative Arena', 2), (22, 'Team Territory', 2), (11, 'SkyNet', 1), (15, 'Cranium Focus', 1)";
-    connection.query(sql, (err, result) =>{
-
-        if(err) throw err;
-        console.log(result);
-        res.send('RoomTable is implemented.');
-    });
-});
-
-app.get('/meetingsList', (req,res) =>{
-    let sql = "INSERT INTO Meetings Values(1, 'Intech International', '10:00', '12:00', 32), (2, 'Sales-Con','10:00', '12:00', 21), (3, 'CyberMeet','09:00', '11:00', 22), (4, 'Earth Space','13:00', '15:00', 11), (5, 'Goference' , '09:00', '11:00', 15)";
-    connection.query(sql, (err, result) =>{
-
-        if(err) throw err;
-        console.log(result);
-        res.send('MeetingsTable is implemented.');
-    });
-});
 
 app.listen(PORT, ()=>{
     console.log(`Server started on port ${PORT}`)
