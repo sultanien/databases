@@ -1,8 +1,8 @@
 export const paperTable = [
     `CREATE TABLE IF NOT EXISTS research_papers(
-        Id INT AUTO_INCREMENT PRIMARY KEY,
+        id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255),
-        conference VARCHAR(75), 
+        conference VARCHAR(255), 
         publish_date DATE
       )`
   ];
@@ -10,7 +10,7 @@ export const paperTable = [
 
 export const joinTable = [
     `CREATE TABLE IF NOT EXISTS author_research(
-        Id INT AUTO_INCREMENT PRIMARY KEY,
+        id INT AUTO_INCREMENT PRIMARY KEY,
         author_id INT,
         paper_id INT,
         FOREIGN KEY(author_id) REFERENCES authors(Id),

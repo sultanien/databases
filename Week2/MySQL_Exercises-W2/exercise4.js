@@ -1,19 +1,19 @@
 export const aggregateFunctions = [
   //All research papers and the number of authors that wrote that paper
-  `SELECT p.title,COUNT(aR.author_id)
+  `SELECT p.title,COUNT(aR.author_id) AS Total_Author
     FROM research_papers AS p
     LEFT OUTER JOIN author_research AS aR
-    ON p.Id = aR.paper_id
+    ON p.id = aR.paper_id
     GROUP BY p.title;
     `,
 
   //Sum of the research papers published by all female authors
-  `SELECT a.gender, COUNT(aR.paper_id)
+  `SELECT a.gender, COUNT(DISTINCT aR.paper_id) AS Total_Paper
         FROM authors AS a
         LEFT OUTER JOIN author_research AS aR
-        ON a.Id = aR.author_id
-        GROUP BY a.gender
-        HAVING gender = "female"`,
+        ON a.id = aR.author_id
+        WHERE gender = "female"
+        GROUP BY a.gender`,
 
   // Average of the h-index of all authors per university
   `SELECT university, AVG(h_index)
@@ -22,10 +22,10 @@ export const aggregateFunctions = [
 
   //Sum of the research papers of the authors per university.
 
-  `SELECT university, COUNT(aR.paper_id) AS Papers_Per_Uni
+  `SELECT university, COUNT(DISTINCT aR.paper_id) AS Papers_Per_Uni
     FROM authors AS a
     LEFT OUTER JOIN author_research AS aR
-    ON a.Id = aR.author_id
+    ON a.id = aR.author_id
     GROUP BY university;
     `,
   //Minimum and maximum of the h-index of all authors per university.

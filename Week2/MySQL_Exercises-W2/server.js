@@ -1,13 +1,13 @@
 import express from "express";
 import mysql from "mysql";
-import { authorsQuery, authorsTable } from "./author.js";
+import { authorsQuery, authorsTable } from "./exercise1.js";
 import {
   paperTable,
   joinTable,
   authorsData,
   paperData,
   junctionTableData,
-} from "./researchPaper.js";
+} from "./exercise2.js";
 import { sql } from "./exercise3.js";
 import { aggregateFunctions } from "./exercise4.js";
 

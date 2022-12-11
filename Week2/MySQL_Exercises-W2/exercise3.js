@@ -6,10 +6,10 @@ export const sql = [
    ON t1.mentor = t2.id`,
 
   //authors and their published paper_title
-  `SELECT authors.Id, name, university, date_of_birth, h_index, gender, mentor, title 
+  `SELECT authors.id, name, university, date_of_birth, h_index, gender, mentor, title 
     FROM authors
     LEFT OUTER JOIN author_research AS a
-    ON authors.Id = a.author_id
+    ON authors.id = a.author_id
     LEFT OUTER JOIN research_papers AS p
-    ON p.Id = a.paper_id`,
+    ON p.id = a.paper_id`,
 ];
