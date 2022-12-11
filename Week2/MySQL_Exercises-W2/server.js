@@ -1,4 +1,3 @@
-import express from "express";
 import mysql from "mysql";
 import { authorsQuery, authorsTable } from "./exercise1.js";
 import {
@@ -10,9 +9,6 @@ import {
 } from "./exercise2.js";
 import { sql } from "./exercise3.js";
 import { aggregateFunctions } from "./exercise4.js";
-
-const app = express();
-const PORT = 3000;
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -59,7 +55,3 @@ junctionTableData.forEach((query) => createQuery(query));
 sql.forEach((query) => processQuery(query));
 
 aggregateFunctions.forEach((query) => processQuery(query));
-
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
-});
