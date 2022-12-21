@@ -25,8 +25,7 @@ async function main() {
         await createAccountCollection(client);
 
         await createTransfer(client, 101, 102, 1000);
-
-        await update_change_number(client,101)
+        
     }catch(err){
         console.error(err);
     }finally{
