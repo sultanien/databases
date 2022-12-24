@@ -10,13 +10,17 @@ dinner_date includes two type of values
 
 ## 2.Entities could be extracted
 
-member_id | member_name   | member_address
+member_id PK| member_name   | member_address
 
-food_code | food_description
+food_id PK| food_description
 
-dinner_id | dinner_date
+dinner_id PK| dinner_date | venue_id FK | food_id FK
 
-venue_code | venue_description 
+venue_id PK | venue_description
+
+id PK | member_id FK | dinner_id FK (join table)
+
+
 
 ## Name all the tables and columns that would make a 3NF compliant solution
 

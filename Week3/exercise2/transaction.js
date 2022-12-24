@@ -1,60 +1,43 @@
-import mysql from "mysql";
-import values from "./transactions-insert-values.js"
-import { tables, tableDropper } from "./transactions-create-table.js";
+/** @format */
 
-const transaction = [
-    `SET AUTOCOMMIT = 0;`,
+import { connection } from "./transactions-create-table.js";
+import util from "util";
 
-    `START TRANSACTION;`,
+const executeQuery = util.promisify(connection.query.bind(connection));
 
-    `UPDATE account 
-        SET balance = balance - 1000 
-        WHERE account_number = 101;`
+async function transaction(account_from, account_to, amount) {
 
-    `INSERT INTO account_changes (account_number, amount, changed_date, remark)
-        VALUES(101, 1000, "2022-12-12 22:00:12", "Money is transferred from account");`
-    
-    `UPDATE account 
-        SET balance = balance + 1000 
-        WHERE account_number = 102;`
-    
-    `INSERT INTO account_changes (account_number, amount, changed_date, remark)
-        VALUES(102, 1000, "2022-12-12 22:00:12", "Money is transferred to account");`
-];
+  const updateQuery = `UPDATE account 
+  SET balance = ? 
+  WHERE account_number = ?`
+  const insertQuery = "INSERT INTO account_changes (account_number, amount, changed_date, remark) VALUES ?"
+  const newAccountValueOfAccount_from = await getAccountBalance(account_from)-amount;
+  const newAccountValueOfAccount_to = await getAccountBalance(account_to) + amount;
+  const changes = [
+    [account_from, amount, new Date(), "Transaction is successful"],
+    [account_to,amount, new Date(),"Transaction is successful",]
+  ];
 
+  try {
+    await executeQuery("SET AUTOCOMMIT = 0");
+    await executeQuery("START TRANSACTION");
+    await executeQuery(updateQuery,[newAccountValueOfAccount_from,account_from]);
+    await executeQuery(updateQuery, [newAccountValueOfAccount_to, account_to]);
+    await executeQuery(insertQuery, [changes]);
+    await executeQuery("COMMIT");
+  } catch (error) {
+    console.error(error);
+    await executeQuery("ROLLBACK");
+  }
 
-const connection = mysql.createConnection({
-    host: "localhost",
-    user: "hyfuser",
-    password: "hyfpassword",
-    database: "userdb",
-  });
-
-connection.connect();
-
-try{
-    await processQuery(tableDropper);
-    await processQuery(tables);
-    await processQuery(values);
-    await processQuery(transaction);
-    connection.commit();
-}catch(error){
-    connection.rollback();
-    console.log(error);
 }
 
-connection.end();
-
-console.log(typeof transaction)
-
-async function processQuery(query) {
-    query.forEach((element) => {
-        connection.query(element,(error, result) => {
-            if (error) {
-                throw error;
-            } else {
-                console.log(result);
-            }
-        });
-    });
+async function getAccountBalance(id) {
+  const query = `SELECT balance FROM account WHERE account_number = ?`;
+  const balance =  await executeQuery(query, id);
+  const balanceValue = JSON.parse(JSON.stringify(balance));
+  const result = balanceValue[0].balance;
+  return result
 }
+
+ transaction(101,102,1000);

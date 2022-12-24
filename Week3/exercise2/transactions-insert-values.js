@@ -1,16 +1,48 @@
-const values = [
-  `INSERT INTO account(balance)
-        VALUES 
-        (3000), 
-        (10000), 
-        (7000);
-    `,
+import {connection } from "./transaction.js";
 
-   `INSERT INTO account_changes(account_number, amount, changed_date, remark)
-        VALUES
-        (100, 500, "2022-11-23 10:00:12", "Money is transferred to account"),
-        (102, 500, "2022-11-23 11:22:28", "Money is transferred from account");
 
-    `
-];
-export default values
+let accountValues = [];
+
+let account_changesValues = [];
+
+
+for(let i = 1; i <= 10; i++ ){
+    const randomBalance = parseFloat((Math.random() * 100000.0).toFixed(2));
+    accountValues.push([randomBalance]);
+}
+
+for(let i = 100; i<=105; i++){
+    const randomBalance = parseFloat((Math.random() * 10000.0).toFixed(2));
+    account_changesValues.push(
+        [   i, 
+            randomBalance, 
+            new Date(), 
+            "Transaction is successful"
+        ]
+    );
+
+}
+
+async function seedDatabase() {
+   try {
+     await connection.query(`INSERT INTO account(balance) VALUES ?`,[accountValues], (error, result) => {
+        if (error) {
+            throw error;
+        } else {
+            console.log('account balance values successfully inserted');
+        }
+    });
+
+    await connection.query(`INSERT INTO account_changes(account_number, amount, changed_date, remark) VALUES ?`, [account_changesValues], (error, result) => {
+        if (error) {
+            throw error;
+        } else {
+            console.log('account_changes values successfully inserted');
+        }
+    });
+
+   } catch (err) {
+     console.error(err.message);
+   }
+ }
+ seedDatabase();
